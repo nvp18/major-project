@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>Bird Classification</title>
+        <style>
+        </style>
+    </head>
+    <body>
+        <input id="image-selector" type="file">
+        <button id="b1">Predict</button>
+        <p>Predictions</p>
+        <div id="d1">
+            
+        </div>
+        <img id="selected-image" src="" />
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            let image;
+            $("#image-selector").change(function(){
+                console.log('dfh')
+                let reader = new FileReader();
+                reader.onload = function(e){
+                    console.log('kdk')
+                    let dataurl = reader.result;
+                    $('#selected-image').attr("src",dataurl);
+                    image = dataurl.replace("data:image/jpeg;base64,","");
+                    console.log(image);
+                }
+                reader.readAsDataURL($('#image-selector')[0].files[0]);
+                document.getElementById('d1').innerHTML = ""
+            });
+            $("#b1").click(function(event){
+               let message={
+                   image : image
+               } 
+               console.log(image);
+                $.post("http://127.0.0.1:5000/predict",JSON.stringify(message),function(response){
+                    console.log(response)
+                    var obj = JSON.parse(response)
+                    obj = obj.replace(/'/g,'"')
+                    obj = JSON.parse(obj)
+                    d = document.getElementById('d1')
+                    for(x in obj)
+                        {
+                            d.insertAdjacentHTML('beforeend',"<p>"+x+" : "+obj[x]+"</p>")
+                        }
+                });
+            });
+        </script>
+    </body>
+</html>
